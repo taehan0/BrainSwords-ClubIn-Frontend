@@ -24,7 +24,7 @@ function formatDateTime(value: string): string {
 function EventDetailPage() {
   const { eventId } = useParams()
   const numericEventId = Number(eventId)
-  const { isLoggedIn } = useAuth()
+  const { isLoggedIn, role } = useAuth()
 
   const [event, setEvent] = useState<EventResponse | null>(null)
   const [myParticipation, setMyParticipation] = useState<ParticipationResponse | null>(null)
@@ -121,6 +121,7 @@ function EventDetailPage() {
       {event.location && <p>장소: {event.location}</p>}
       {event.capacity !== null && <p>정원: {event.capacity}명</p>}
       {event.content && <p className="event-content">{event.content}</p>}
+      {role === 'ADMIN' && <Link to={`/events/${event.id}/participants`}>신청자 · 출석 관리</Link>}
 
       <div className="event-actions">
         {isLoggedIn ? (

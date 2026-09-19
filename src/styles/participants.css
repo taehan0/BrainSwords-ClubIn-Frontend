@@ -1,0 +1,46 @@
+.participants-page {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.participants-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+.participants-table th,
+.participants-table td {
+  border-bottom: 1px solid var(--border);
+  padding: 10px 8px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.attendance-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.attendance-actions button {
+  font: inherit;
+  font-size: 13px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text-h);
+  cursor: pointer;
+}
+
+.attendance-actions button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+.attendance-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

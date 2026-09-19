@@ -26,3 +26,20 @@ export async function applyParticipation(eventId: number): Promise<Participation
 export async function cancelParticipation(eventId: number): Promise<void> {
   await apiClient.delete(`/api/events/${eventId}/participations`)
 }
+
+export async function getParticipants(eventId: number): Promise<ParticipationResponse[]> {
+  const { data } = await apiClient.get<ParticipationResponse[]>(`/api/events/${eventId}/participations`)
+  return data
+}
+
+export async function checkAttendance(
+  eventId: number,
+  memberId: number,
+  attendanceStatus: AttendanceStatus,
+): Promise<ParticipationResponse> {
+  const { data } = await apiClient.patch<ParticipationResponse>(
+    `/api/events/${eventId}/participations/${memberId}/attendance`,
+    { attendanceStatus },
+  )
+  return data
+}
