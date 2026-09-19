@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { type EventResponse, getEvents } from '../api/events'
 import { getErrorMessage } from '../api/errors'
 import { useAuth } from '../auth/AuthContext'
-import '../styles/events.css'
+import { errorTextClass, primaryButtonClass } from '../styles/ui'
 
 function formatDateTime(value: string): string {
   return new Date(value).toLocaleString('ko-KR', {
@@ -53,34 +53,45 @@ function EventListPage() {
   }, [])
 
   return (
-    <section>
-      <div className="page-header">
-        <h1>행사 목록</h1>
-        {role === 'ADMIN' && <Link to="/events/new">행사 등록</Link>}
+    <div>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">행사 목록</h1>
+        {role === 'ADMIN' && (
+          <Link to="/events/new" className={primaryButtonClass}>
+            행사 등록
+          </Link>
+        )}
       </div>
 
-      {isLoading && <p>불러오는 중...</p>}
+      {isLoading && <p className="text-neutral-500 dark:text-neutral-400">불러오는 중...</p>}
       {error && (
-        <p className="form-error" role="alert">
+        <p role="alert" className={errorTextClass}>
           {error}
         </p>
       )}
-      {!isLoading && !error && events.length === 0 && <p>등록된 행사가 없습니다.</p>}
+      {!isLoading && !error && events.length === 0 && (
+        <p className="text-neutral-500 dark:text-neutral-400">등록된 행사가 없습니다.</p>
+      )}
 
-      <ul className="event-list">
+      <ul className="flex flex-col gap-3">
         {events.map((event) => (
-          <li key={event.id} className="event-card">
-            <Link to={`/events/${event.id}`}>
-              <h2>{event.title}</h2>
-              <p>
+          <li key={event.id}>
+            <Link
+              to={`/events/${event.id}`}
+              className="block rounded-lg border border-neutral-200 p-4 transition-colors hover:border-violet-400 hover:bg-violet-50/60 dark:border-neutral-800 dark:hover:border-violet-600 dark:hover:bg-violet-950/20"
+            >
+              <h2 className="text-lg font-medium">{event.title}</h2>
+              <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
                 {formatDateTime(event.startAt)} ~ {formatDateTime(event.endAt)}
               </p>
-              {event.location && <p>{event.location}</p>}
+              {event.location && (
+                <p className="mt-0.5 text-sm text-neutral-500 dark:text-neutral-400">{event.location}</p>
+              )}
             </Link>
           </li>
         ))}
       </ul>
-    </section>
+    </div>
   )
 }
 

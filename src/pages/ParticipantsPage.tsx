@@ -7,8 +7,9 @@ import {
   checkAttendance,
   getParticipants,
   type ParticipationResponse,
+  type ParticipationStatus,
 } from '../api/participations'
-import '../styles/participants.css'
+import { errorTextClass } from '../styles/ui'
 
 function formatDateTime(value: string): string {
   return new Date(value).toLocaleString('ko-KR', {
@@ -20,7 +21,7 @@ function formatDateTime(value: string): string {
   })
 }
 
-const STATUS_LABEL: Record<ParticipationResponse['status'], string> = {
+const STATUS_LABEL: Record<ParticipationStatus, string> = {
   APPLIED: '신청',
   CANCELLED: '취소',
 }
@@ -32,6 +33,24 @@ const ATTENDANCE_LABEL: Record<AttendanceStatus, string> = {
 }
 
 const ATTENDANCE_OPTIONS: AttendanceStatus[] = ['ATTENDED', 'ABSENT', 'NOT_CHECKED']
+
+const BADGE_BASE = 'inline-flex rounded-full px-2 py-0.5 text-xs font-medium'
+
+function statusBadgeClass(status: ParticipationStatus): string {
+  return status === 'APPLIED'
+    ? `${BADGE_BASE} bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400`
+    : `${BADGE_BASE} bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400`
+}
+
+function attendanceBadgeClass(status: AttendanceStatus): string {
+  if (status === 'ATTENDED') {
+    return `${BADGE_BASE} bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400`
+  }
+  if (status === 'ABSENT') {
+    return `${BADGE_BASE} bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400`
+  }
+  return `${BADGE_BASE} bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400`
+}
 
 function ParticipantsPage() {
   const { eventId } = useParams()
@@ -95,66 +114,81 @@ function ParticipantsPage() {
   }
 
   if (isLoading) {
-    return (
-      <section>
-        <p>불러오는 중...</p>
-      </section>
-    )
+    return <p className="text-neutral-500 dark:text-neutral-400">불러오는 중...</p>
   }
 
   return (
-    <section className="participants-page">
-      <h1>신청자 · 출석 관리{event ? ` — ${event.title}` : ''}</h1>
+    <div>
+      <h1 className="text-2xl font-semibold">신청자 · 출석 관리{event ? ` — ${event.title}` : ''}</h1>
 
       {error && (
-        <p className="form-error" role="alert">
+        <p role="alert" className={`mt-3 ${errorTextClass}`}>
           {error}
         </p>
       )}
 
       {participants.length === 0 ? (
-        <p>신청자가 없습니다.</p>
+        <p className="mt-6 text-neutral-500 dark:text-neutral-400">신청자가 없습니다.</p>
       ) : (
-        <table className="participants-table">
-          <thead>
-            <tr>
-              <th>아이디</th>
-              <th>신청 상태</th>
-              <th>출석 상태</th>
-              <th>신청 일시</th>
-              <th>출석 체크</th>
-            </tr>
-          </thead>
-          <tbody>
-            {participants.map((participant) => (
-              <tr key={participant.id}>
-                <td>{participant.loginId}</td>
-                <td>{STATUS_LABEL[participant.status]}</td>
-                <td>{ATTENDANCE_LABEL[participant.attendanceStatus]}</td>
-                <td>{formatDateTime(participant.appliedAt)}</td>
-                <td>
-                  <div className="attendance-actions">
-                    {ATTENDANCE_OPTIONS.map((option) => (
-                      <button
-                        key={option}
-                        type="button"
-                        className={participant.attendanceStatus === option ? 'active' : ''}
-                        disabled={
-                          participant.status !== 'APPLIED' || updatingMemberId === participant.memberId
-                        }
-                        onClick={() => handleAttendanceChange(participant.memberId, option)}
-                      >
-                        {ATTENDANCE_LABEL[option]}
-                      </button>
-                    ))}
-                  </div>
-                </td>
+        <div className="mt-6 overflow-x-auto">
+          <table className="w-full min-w-max border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-neutral-200 text-left text-neutral-500 dark:border-neutral-800 dark:text-neutral-400">
+                <th className="py-2 pr-4 font-medium">아이디</th>
+                <th className="py-2 pr-4 font-medium">신청 상태</th>
+                <th className="py-2 pr-4 font-medium">출석 상태</th>
+                <th className="py-2 pr-4 font-medium">신청 일시</th>
+                <th className="py-2 font-medium">출석 체크</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {participants.map((participant) => (
+                <tr
+                  key={participant.id}
+                  className="border-b border-neutral-100 last:border-0 dark:border-neutral-900"
+                >
+                  <td className="py-3 pr-4">{participant.loginId}</td>
+                  <td className="py-3 pr-4">
+                    <span className={statusBadgeClass(participant.status)}>
+                      {STATUS_LABEL[participant.status]}
+                    </span>
+                  </td>
+                  <td className="py-3 pr-4">
+                    <span className={attendanceBadgeClass(participant.attendanceStatus)}>
+                      {ATTENDANCE_LABEL[participant.attendanceStatus]}
+                    </span>
+                  </td>
+                  <td className="py-3 pr-4 text-neutral-500 dark:text-neutral-400">
+                    {formatDateTime(participant.appliedAt)}
+                  </td>
+                  <td className="py-3">
+                    <div className="flex gap-1.5">
+                      {ATTENDANCE_OPTIONS.map((option) => (
+                        <button
+                          key={option}
+                          type="button"
+                          disabled={
+                            participant.status !== 'APPLIED' || updatingMemberId === participant.memberId
+                          }
+                          onClick={() => handleAttendanceChange(participant.memberId, option)}
+                          className={`rounded-md border px-2.5 py-1 text-xs font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+                            participant.attendanceStatus === option
+                              ? 'border-violet-600 bg-violet-600 text-white'
+                              : 'border-neutral-300 text-neutral-600 hover:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800'
+                          }`}
+                        >
+                          {ATTENDANCE_LABEL[option]}
+                        </button>
+                      ))}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
-    </section>
+    </div>
   )
 }
 

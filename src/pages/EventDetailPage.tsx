@@ -9,7 +9,7 @@ import {
   type ParticipationResponse,
 } from '../api/participations'
 import { useAuth } from '../auth/AuthContext'
-import '../styles/events.css'
+import { dangerButtonClass, errorTextClass, linkClass, primaryButtonClass } from '../styles/ui'
 
 function formatDateTime(value: string): string {
   return new Date(value).toLocaleString('ko-KR', {
@@ -95,62 +95,70 @@ function EventDetailPage() {
   }
 
   if (isLoading) {
-    return (
-      <section>
-        <p>불러오는 중...</p>
-      </section>
-    )
+    return <p className="text-neutral-500 dark:text-neutral-400">불러오는 중...</p>
   }
 
   if (loadError || !event) {
     return (
-      <section>
-        <p className="form-error" role="alert">
-          {loadError ?? '행사를 찾을 수 없습니다.'}
-        </p>
-      </section>
+      <p role="alert" className={errorTextClass}>
+        {loadError ?? '행사를 찾을 수 없습니다.'}
+      </p>
     )
   }
 
   return (
-    <section className="event-detail">
-      <h1>{event.title}</h1>
-      <p>
-        {formatDateTime(event.startAt)} ~ {formatDateTime(event.endAt)}
-      </p>
-      {event.location && <p>장소: {event.location}</p>}
-      {event.capacity !== null && <p>정원: {event.capacity}명</p>}
-      {event.content && <p className="event-content">{event.content}</p>}
+    <div>
+      <h1 className="text-3xl font-semibold">{event.title}</h1>
+
+      <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-neutral-600 dark:text-neutral-400">
+        <span>
+          {formatDateTime(event.startAt)} ~ {formatDateTime(event.endAt)}
+        </span>
+        {event.location && <span>· {event.location}</span>}
+        {event.capacity !== null && <span>· 정원 {event.capacity}명</span>}
+      </div>
+
+      {event.content && (
+        <p className="mt-6 whitespace-pre-wrap text-neutral-700 dark:text-neutral-300">{event.content}</p>
+      )}
+
       {role === 'ADMIN' && (
-        <div className="admin-links">
-          <Link to={`/events/${event.id}/edit`}>행사 수정</Link>
-          <Link to={`/events/${event.id}/participants`}>신청자 · 출석 관리</Link>
+        <div className="mt-4 flex gap-4 text-sm">
+          <Link to={`/events/${event.id}/edit`} className={linkClass}>
+            행사 수정
+          </Link>
+          <Link to={`/events/${event.id}/participants`} className={linkClass}>
+            신청자 · 출석 관리
+          </Link>
         </div>
       )}
 
-      <div className="event-actions">
+      <div className="mt-8">
         {isLoggedIn ? (
           myParticipation ? (
-            <button type="button" onClick={handleCancel} disabled={isSubmitting}>
+            <button type="button" onClick={handleCancel} disabled={isSubmitting} className={dangerButtonClass}>
               {isSubmitting ? '처리 중...' : '참가 취소'}
             </button>
           ) : (
-            <button type="button" onClick={handleApply} disabled={isSubmitting}>
+            <button type="button" onClick={handleApply} disabled={isSubmitting} className={primaryButtonClass}>
               {isSubmitting ? '처리 중...' : '참가 신청'}
             </button>
           )
         ) : (
-          <p>
-            <Link to="/login">로그인</Link> 후 참가 신청할 수 있습니다.
+          <p className="text-neutral-600 dark:text-neutral-400">
+            <Link to="/login" className={linkClass}>
+              로그인
+            </Link>{' '}
+            후 참가 신청할 수 있습니다.
           </p>
         )}
         {actionError && (
-          <p className="form-error" role="alert">
+          <p role="alert" className={`mt-2 ${errorTextClass}`}>
             {actionError}
           </p>
         )}
       </div>
-    </section>
+    </div>
   )
 }
 

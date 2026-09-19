@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { getErrorMessage } from '../api/errors'
 import { type EventRequest, getEvent, updateEvent } from '../api/events'
 import EventForm, { type EventFormValues } from '../components/EventForm'
+import { errorTextClass } from '../styles/ui'
 
 function toDateTimeLocal(value: string): string {
   return value.slice(0, 16)
@@ -60,26 +61,20 @@ function EventEditPage() {
   }
 
   if (isLoading) {
-    return (
-      <section>
-        <p>불러오는 중...</p>
-      </section>
-    )
+    return <p className="text-neutral-500 dark:text-neutral-400">불러오는 중...</p>
   }
 
   if (loadError || !initialValues) {
     return (
-      <section>
-        <p className="form-error" role="alert">
-          {loadError ?? '행사를 찾을 수 없습니다.'}
-        </p>
-      </section>
+      <p role="alert" className={errorTextClass}>
+        {loadError ?? '행사를 찾을 수 없습니다.'}
+      </p>
     )
   }
 
   return (
-    <section>
-      <h1>행사 수정</h1>
+    <div>
+      <h1 className="mb-6 text-2xl font-semibold">행사 수정</h1>
       <EventForm
         initialValues={initialValues}
         submitLabel="수정 완료"
@@ -87,7 +82,7 @@ function EventEditPage() {
         errorFallback="행사 수정에 실패했습니다."
         onSubmit={handleSubmit}
       />
-    </section>
+    </div>
   )
 }
 

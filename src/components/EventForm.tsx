@@ -1,7 +1,7 @@
 import { type FormEvent, useState } from 'react'
 import type { EventRequest } from '../api/events'
 import { getErrorMessage } from '../api/errors'
-import '../styles/forms.css'
+import { errorTextClass, inputClass, labelClass, primaryButtonClass } from '../styles/ui'
 
 export interface EventFormValues {
   title: string
@@ -52,16 +52,16 @@ function EventForm({ initialValues, submitLabel, pendingLabel, errorFallback, on
   }
 
   return (
-    <form className="form" onSubmit={handleSubmit}>
-      <label htmlFor="title">
+    <form onSubmit={handleSubmit} className="flex max-w-md flex-col gap-4">
+      <label htmlFor="title" className={labelClass}>
         제목
-        <input id="title" value={title} onChange={(event) => setTitle(event.target.value)} required />
+        <input id="title" value={title} onChange={(event) => setTitle(event.target.value)} required className={inputClass} />
       </label>
-      <label htmlFor="location">
+      <label htmlFor="location" className={labelClass}>
         장소
-        <input id="location" value={location} onChange={(event) => setLocation(event.target.value)} />
+        <input id="location" value={location} onChange={(event) => setLocation(event.target.value)} className={inputClass} />
       </label>
-      <label htmlFor="startAt">
+      <label htmlFor="startAt" className={labelClass}>
         시작 시각
         <input
           id="startAt"
@@ -69,9 +69,10 @@ function EventForm({ initialValues, submitLabel, pendingLabel, errorFallback, on
           value={startAt}
           onChange={(event) => setStartAt(event.target.value)}
           required
+          className={inputClass}
         />
       </label>
-      <label htmlFor="endAt">
+      <label htmlFor="endAt" className={labelClass}>
         종료 시각
         <input
           id="endAt"
@@ -79,9 +80,10 @@ function EventForm({ initialValues, submitLabel, pendingLabel, errorFallback, on
           value={endAt}
           onChange={(event) => setEndAt(event.target.value)}
           required
+          className={inputClass}
         />
       </label>
-      <label htmlFor="capacity">
+      <label htmlFor="capacity" className={labelClass}>
         정원 (선택)
         <input
           id="capacity"
@@ -89,18 +91,25 @@ function EventForm({ initialValues, submitLabel, pendingLabel, errorFallback, on
           min={1}
           value={capacity}
           onChange={(event) => setCapacity(event.target.value)}
+          className={inputClass}
         />
       </label>
-      <label htmlFor="content">
+      <label htmlFor="content" className={labelClass}>
         내용
-        <textarea id="content" rows={5} value={content} onChange={(event) => setContent(event.target.value)} />
+        <textarea
+          id="content"
+          rows={5}
+          value={content}
+          onChange={(event) => setContent(event.target.value)}
+          className={`${inputClass} resize-y`}
+        />
       </label>
       {error && (
-        <p className="form-error" role="alert">
+        <p role="alert" className={errorTextClass}>
           {error}
         </p>
       )}
-      <button type="submit" disabled={isSubmitting}>
+      <button type="submit" disabled={isSubmitting} className={primaryButtonClass}>
         {isSubmitting ? pendingLabel : submitLabel}
       </button>
     </form>
