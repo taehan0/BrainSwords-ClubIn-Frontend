@@ -121,7 +121,12 @@ function EventDetailPage() {
       {event.location && <p>장소: {event.location}</p>}
       {event.capacity !== null && <p>정원: {event.capacity}명</p>}
       {event.content && <p className="event-content">{event.content}</p>}
-      {role === 'ADMIN' && <Link to={`/events/${event.id}/participants`}>신청자 · 출석 관리</Link>}
+      {role === 'ADMIN' && (
+        <div className="admin-links">
+          <Link to={`/events/${event.id}/edit`}>행사 수정</Link>
+          <Link to={`/events/${event.id}/participants`}>신청자 · 출석 관리</Link>
+        </div>
+      )}
 
       <div className="event-actions">
         {isLoggedIn ? (

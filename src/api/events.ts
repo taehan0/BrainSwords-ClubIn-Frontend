@@ -33,3 +33,8 @@ export async function createEvent(request: EventRequest): Promise<EventResponse>
   const { data } = await apiClient.post<EventResponse>('/api/events', request)
   return data
 }
+
+export async function updateEvent(eventId: number, request: EventRequest): Promise<EventResponse> {
+  const { data } = await apiClient.put<EventResponse>(`/api/events/${eventId}`, request)
+  return data
+}
