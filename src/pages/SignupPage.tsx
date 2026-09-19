@@ -30,7 +30,7 @@ function SignupPage() {
   return (
     <section>
       <h1>회원가입</h1>
-      <form className="auth-form" onSubmit={handleSubmit}>
+      <form className="form" onSubmit={handleSubmit}>
         <label htmlFor="loginId">
           아이디
           <input

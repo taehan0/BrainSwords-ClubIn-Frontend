@@ -19,3 +19,17 @@ export async function getEvent(eventId: number): Promise<EventResponse> {
   const { data } = await apiClient.get<EventResponse>(`/api/events/${eventId}`)
   return data
 }
+
+export interface EventRequest {
+  title: string
+  content: string
+  location: string
+  startAt: string
+  endAt: string
+  capacity: number | null
+}
+
+export async function createEvent(request: EventRequest): Promise<EventResponse> {
+  const { data } = await apiClient.post<EventResponse>('/api/events', request)
+  return data
+}

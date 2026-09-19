@@ -33,7 +33,7 @@ function LoginPage() {
   return (
     <section>
       <h1>로그인</h1>
-      <form className="auth-form" onSubmit={handleSubmit}>
+      <form className="form" onSubmit={handleSubmit}>
         <label htmlFor="loginId">
           아이디
           <input
