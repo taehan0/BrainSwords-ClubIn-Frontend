@@ -14,3 +14,8 @@ export async function getEvents(): Promise<EventResponse[]> {
   const { data } = await apiClient.get<EventResponse[]>('/api/events')
   return data
 }
+
+export async function getEvent(eventId: number): Promise<EventResponse> {
+  const { data } = await apiClient.get<EventResponse>(`/api/events/${eventId}`)
+  return data
+}
